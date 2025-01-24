@@ -12,4 +12,8 @@
 
 - Filtered DF to contain "Date ""Volume" "Open" "Close" attributes
 
-- Created aggregated bar chart to showcase weekly volume.
+- Created /volume_chart to show an aggregated bar chart of weekly volume.
+
+### 3rd Commit
+
+- Created /line_chart to show weekly average open and closing prices.

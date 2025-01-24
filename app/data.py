@@ -24,7 +24,6 @@ def load_csv(file_path):
     except Exception as e:
         print(f"Error loading CSV file: {e}")
 
-
 # Path to your CSV file
 csv_path = r"C:\\Users\\Ev\\Desktop\\TRG8\\Google_stock.csv"
 load_csv(csv_path)
@@ -62,6 +61,35 @@ def volume_chart():
         return send_file(img, mimetype='image/png')
     except Exception as e:
         return f"Error generating chart: {e}", 500
+
+@app.route('/line_chart', methods=['GET'])
+def line_chart():
+    try:
+        # Resample the data to weekly frequency and calculate the average open and close prices
+        weekly_data = dataframe.resample('W', on='Date').mean()
+        
+        # Create a line chart
+        plt.figure(figsize=(10, 6))
+        plt.plot(weekly_data.index, weekly_data['Open'], label='Weekly Average Open Price', color='green')
+        plt.plot(weekly_data.index, weekly_data['Close'], label='Weekly Average Close Price', color='red')
+        plt.xlabel('Week', fontsize=12)
+        plt.ylabel('Price', fontsize=12)
+        plt.title('Weekly Average Open and Close Prices', fontsize=14)
+        plt.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+        # Save the plot to a BytesIO object
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        plt.close()
+        
+        return send_file(img, mimetype='image/png')
+    except Exception as e:
+        return f"Error generating chart: {e}", 500
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True)
