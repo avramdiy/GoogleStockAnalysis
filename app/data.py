@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from flask import send_file
 import io
+import mplfinance as mpf  # Import mplfinance for candlestick charts
 
 app = Flask(__name__)
 
@@ -88,7 +89,35 @@ def line_chart():
         return send_file(img, mimetype='image/png')
     except Exception as e:
         return f"Error generating chart: {e}", 500
-    
+
+@app.route('/candlestick_chart', methods=['GET'])
+def candlestick_chart():
+    try:
+        # Resample the data to weekly frequency
+        ohlc_data = dataframe.resample('W', on='Date').agg({
+            'Open': 'first',  # First value of the week for "Open"
+            'Close': 'last',  # Last value of the week for "Close"
+            'Volume': 'sum'   # Sum of the "Volume" for the week
+        }).dropna()
+
+        # Assuming Open is used for low and Close for high as placeholders
+        ohlc_data['High'] = ohlc_data[['Open', 'Close']].max(axis=1)
+        ohlc_data['Low'] = ohlc_data[['Open', 'Close']].min(axis=1)
+
+        # Generate the candlestick chart
+        img = io.BytesIO()
+        mpf.plot(
+            ohlc_data,
+            type='candle',
+            volume=True,
+            style='yahoo',
+            savefig=dict(fname=img, format='png')
+        )
+        img.seek(0)
+        
+        return send_file(img, mimetype='image/png')
+    except Exception as e:
+        return f"Error generating candlestick chart: {e}", 500
 
 
 if __name__ == '__main__':

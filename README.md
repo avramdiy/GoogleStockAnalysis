@@ -17,3 +17,7 @@
 ### 3rd Commit
 
 - Created /line_chart to show weekly average open and closing prices.
+
+### 4th Commit
+
+- Created /candlestick_chart route to visualize weekly candlestick charts. Utilized aggregation for weekly frequency. Showcases volume bars to accompany the open and close candles.
